@@ -1,0 +1,71 @@
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+<title>Student List</title>
+<style>
+body{background-image: url("./images/background.jpg");background-position: center center;
+    background-size: 100% 100%; }
+    div{
+    	background-color: white;
+    	opacity: 0.85;
+    	width:500px;
+    	height:320px;
+    	border-radius: 15px;
+    }
+</style>
+</head>
+<body onload="studentAnswerSheets()">
+  <center><div>
+  <image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" >
+  <h1>Students</h1>
+  <center><table id="myTableData"  border="1" cellpadding="2">
+  <tr>
+      <td><b>Students</b></td>
+      <td>&nbsp</td>
+  </tr>
+</table></center>
+  </div> </center>
+  <script>
+  var config = {
+    apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+    authDomain: "iwtproj.firebaseapp.com",
+    databaseURL: "https://iwtproj.firebaseio.com",
+    projectId: "iwtproj",
+    storageBucket: "iwtproj.appspot.com",
+    messagingSenderId: "417785185411"
+  };
+
+  firebase.initializeApp(config);
+
+  var semselected = localStorage.getItem("tsem");
+  var branch = localStorage.getItem("branch");
+
+function studentAnswerSheets(){
+  console.log(branch);
+  console.log(semselected);
+  var ref = firebase.database().ref("AnswerScripts").child(branch).child(semselected) //subsitite CS and 6 for the actual value fetched from local storage
+  ref.once("value").then(function(snapshot){
+    snapshot.forEach(function(childSnapshot) {
+      var key = childSnapshot.key;
+      addRow(key);
+    });
+  });
+}
+
+function studentSelected(studentName){
+    localStorage.setItem("studentSel",studentName);
+    window.location.assign('./AnswerStudSubjectList.html');
+}
+
+function addRow(student){
+    let table = document.getElementById("myTableData");
+    var rowCount = table.rows.length;
+    var row = table.insertRow(rowCount);
+    row.insertCell(0).innerHTML = student;
+    row.insertCell(1).innerHTML = '<input type="button" value="Answer" '+'onclick=(studentSelected("'+student+'"))>';
+}
+
+  </script>
+</body>
+</html>

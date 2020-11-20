@@ -1,0 +1,166 @@
+
+<html lang="en" dir="ltr">
+  <head>
+      <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+      <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+      <link rel="icon" href="https://nptel.ac.in/LocalChapter/Assets/college_logo/846_logo.png">
+    <title>Teacher</title>
+  <style type="text/css">
+    h1{font-family: Arial, Helvetica, serif;font-style: italic;}
+    body{background-image: url('./images/IMG_0194.jpg');background-position: center center;
+      background-size: 100% 100%;}
+      div{
+      	background-color: white;
+      	opacity: 0.85;
+      	width:600px;
+      	height:800px;
+      	border-radius: 15px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+    a.button{font-size:16px;padding:10px;color: blue;color:black;background-color: lightgrey;border-radius: 10px;}
+    a.button:hover{background-color: grey}
+.form-popup {
+      display: none;
+      position: fixed;
+      top: 25%;
+      width:40% auto;
+      height:60%;
+      overflow: auto;
+      padding-bottom: 50px;
+      border: 3px solid #f1f1f1;
+}
+.form-container {
+      max-width: 600px;
+      padding: 10px;
+      margin-left: auto;
+      margin-right: auto;
+      background-color: white;
+      box-sizing: border-box;
+      border-style: solid;
+      border-width: 3px;
+    }
+    select {
+    font-size: 12px;
+    width: 65%;
+    padding: 12px 20px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.form-container input[type=text]  {
+      font-size: 12px;
+      width: 65%;
+      padding: 12px 20px;
+      margin:  8px 0;
+      box-sizing: border-box;
+    }
+label.headinglbl{font-family: Arial, Helvetica, serif;font-size: 20px;}
+.form-container input[type=text]:focus {
+      background-color: #ddd;
+      outline: none;
+    }
+.form-container .btn {
+      background-color: #4CAF50;
+      color: white;
+      padding: 15px 32px;
+      border: none;
+      cursor: pointer;
+      position: center;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      opacity: 0.8;
+    }
+.form-container .btn {
+      background-color: red;
+    }
+.form-container .btn:hover, {
+      opacity: 1;
+    }
+  </style>
+    <meta charset="utf-8">
+    <title>Teacher</title>
+  </head>
+  <body onload="fetchTeacherInfo()">
+      <div>
+      </br>
+        <center><image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" ></center>
+        <center><h1>Teacher Portal</h1></center>
+        <center><a class="button" onclick="openForm()">Upload new question paper</a></center> <br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(1)">1st semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(2)">2nd semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(3)">3rd semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(4)">4th semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(5)">5th semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(6)">6th semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(7)">7th semester</a></center><br/><br/>
+        <center><a class="button" onclick="AnswerSheetList(8)">8th semester</a></center><br/><br/>
+          <center><button id="logout">Log Out</button></center>
+        <div class="form-popup" id="myForm">
+          <form action="UploadQuestions.html" class="form-container" method="GET">
+            <h1 align="center">Question paper</h1>
+            <label class="headinglbl"><b>Branch<b><sup>*</sup></label>
+            <br><select id="selDept" name="Branch">
+                <option value="CS">Computer Science</option>
+                <option value="IS">Information Science</option>
+                <option value="ECE">Electronics&Communications</option>
+                <option value="Civil">Civil Engineering</option>
+                <option value="IEM">Industrial Engineering</option>
+                <option value="Aero">Aeronautics</option>
+              </select><br/>
+            <label id="sem" class="headinglbl"><b>Semester</b></label>
+            <br><input type="text" placeholder="Enter Semester" name="Semester" required></br>
+            <label id="sub" class="headinglbl"><b>Subject</b></label>
+            <br><input type="text" placeholder="Enter Subject" name="Subject" required></br>
+            <br><label id="marks" class="headinglbl"><b>Select marks:<b></label>
+              <input type="radio" name="marks" value="50">50
+              <input type="radio" name="marks" value="100">100</br>
+              <br><input type="submit"></br>
+            </form>
+        </div>
+      </div>
+      <script>
+          var config = {
+              apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+              authDomain: "iwtproj.firebaseapp.com",
+              databaseURL: "https://iwtproj.firebaseio.com",
+              projectId: "iwtproj",
+              storageBucket: "iwtproj.appspot.com",
+              messagingSenderId: "417785185411"
+          };
+          firebase.initializeApp(config);
+
+          var name=localStorage.getItem("email");
+          console.log(name);
+
+          document.getElementById("logout").onclick= () => {
+              firebase.auth().signOut().then(window.location.assign('./home.html'));
+          }
+
+          var branch = "";
+          function openForm() {
+        document.getElementById("myForm").style.display = "block";
+      }
+
+      function AnswerSheetList(rsem){
+          //save the sem info(button selected) and branch and move to the next page(StudentAnswerSheetList)
+          localStorage.setItem("tsem",rsem);
+          localStorage.setItem("branch",branch);
+          window.location.assign('./StudentAnswerSheetList.html');
+      }
+
+
+
+      function fetchTeacherInfo(){
+        var databaseref = firebase.database().ref("teachers");
+        databaseref.orderByChild("username").equalTo(name).on("child_added", function(snapshot) {
+          var data = snapshot.val();
+          branch = data.Dept;
+      });
+      }
+
+    </script>
+    </body>
+</html>

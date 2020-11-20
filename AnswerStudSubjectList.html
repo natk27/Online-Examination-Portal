@@ -1,0 +1,80 @@
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+<title> Student subject list </title>
+<style type='text/css'>
+  body{background-image: url('./images/IMG_1900.jpg');background-position: center center;
+      background-size: 100% 100%; }
+  div{
+          background-color: white;
+          opacity: 0.85;
+          width:600px;
+          height:600px;
+          border-radius: 15px;
+          margin-left: auto;
+          margin-right: auto;
+      }
+</style>
+</head>
+<body onload="fetchAnswerScriptsForStudent()">
+    <center></center>
+    <center><div>
+      <br/>
+      <center> <image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" ></center>
+      <br/>
+      <h1> Subjects </h1>
+      <table id="myTableData"  border="1" cellpadding="2">
+      <tr>
+          <td><b>Question Papers</b></td>
+          <td>&nbsp</td>
+      </tr>
+      </table><br><br>
+    </div> </center>
+
+    <script>
+
+    var config = {
+      apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+      authDomain: "iwtproj.firebaseapp.com",
+      databaseURL: "https://iwtproj.firebaseio.com",
+      projectId: "iwtproj",
+      storageBucket: "iwtproj.appspot.com",
+      messagingSenderId: "417785185411"
+    };
+    firebase.initializeApp(config);
+
+    function fetchAnswerScriptsForStudent(){
+      var ref = firebase.database().ref("AnswerScripts").child(branch).child(semselected).child(selectedstudent); //subsitite CS and 6 for the actual value fetched from local storage
+      ref.once("value").then(function(snapshot){
+        snapshot.forEach(function(childSnapshot) {
+          var key = childSnapshot.key;
+          addRow(key);
+        });
+      });
+    }
+
+    function buttonclicked(selectedSubject){
+      //move to AnswerSheet.html with the branch,sem,student name and the subject selected in the page(selectedSubject)
+        localStorage.setItem("subjectSel",selectedSubject);
+        window.location.assign('./AnswerSheet.html');
+    }
+
+    var selectedstudent = localStorage.getItem("studentSel");
+    var semselected = localStorage.getItem("tsem");
+    var branch = localStorage.getItem("branch");
+
+    function addRow(subject){
+        let table = document.getElementById("myTableData");
+        var rowCount = table.rows.length;
+        var row = table.insertRow(rowCount);
+        row.insertCell(0).innerHTML = subject;
+        row.insertCell(1).innerHTML = '<input type="button" value="Evaluate" '+'onclick=(buttonclicked("'+subject+'"))>'
+  }
+    var sem=localStorage.getItem("sem");
+    var branch=localStorage.getItem("branch");
+    var studSel=localStorage.getItem("studentSel");
+
+</script>
+</body>
+</html>

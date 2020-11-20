@@ -1,0 +1,109 @@
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+  <title> Student Home </title>
+  <style type='text/css'>
+  body{background-image: url("./images/background.jpg");background-position: center center;
+      background-size: 100% 100%; }
+    h1{font-family: Arial, Helvetica, serif;font-style: italic;}
+  div{
+      background-color: white;
+      opacity: 0.85;
+      width:600px;
+      height:600px;
+      border-radius: 15px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  </style>
+</head>
+<body onload="fetchUserInfo()">
+  <div>
+    <br/>
+    <center> <image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" ></center>
+    <br/>
+    <center><h1> Student Portal</h1></center>
+    <center><table>
+      <table id="myTableData"  border="1" cellpadding="2">
+      <tr>
+          <td><b>Question Papers</b></td>
+          <td>&nbsp</td>
+      </tr>
+      </table><br><br><button id="logout">Log Out</button>
+  <script>
+  var config = {
+    apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+    authDomain: "iwtproj.firebaseapp.com",
+    databaseURL: "https://iwtproj.firebaseio.com",
+    projectId: "iwtproj",
+    storageBucket: "iwtproj.appspot.com",
+    messagingSenderId: "417785185411"
+  };
+  firebase.initializeApp(config);
+
+  document.getElementById("logout").onclick= () => {
+    firebase.auth().signOut().then(window.location.assign('./home.html'));
+  }
+
+  /*firebase.auth().onAuthStateChanged(function(user) {
+    if (!user) {
+      window.location.assign('./home.html');
+    }
+  });*/
+
+
+  var name=localStorage.getItem("email");
+  console.log(name);
+
+  var questionPaperNames = [];
+
+  var studentName = "",sem="",branch="";
+
+  function fetchUserInfo(){
+      var databaseref = firebase.database().ref("students");
+      databaseref.orderByChild("username").equalTo(name).on("child_added", function(snapshot) {
+        var data = snapshot.val();
+        sem = data.Sem;
+        branch = data.Dept;
+        studentName = data.FirstName;
+        FetchQuestionPaperList(branch,sem);
+    });
+  }
+
+    function FetchQuestionPaperList(userbranch,usersem){
+      var ref = firebase.database().ref("papers").child(userbranch).child(usersem);
+      ref.once("value").then(function(snapshot){
+        snapshot.forEach(function(childSnapshot) {
+          var key = childSnapshot.key;
+          addRow(String(key));
+        });
+      });
+
+  }
+
+  var questionpapers = [];
+
+  function buttonclicked(paperselected){
+    //move to answerStud with the branch, sem, studentName and paper selected information.
+    localStorage.setItem("sem",sem);
+    localStorage.setItem("branch",branch);
+    localStorage.setItem("studentName",studentName);
+    localStorage.setItem("paperselected",paperselected);
+    window.location.assign('./answerStud.html');
+  }
+
+var selectedpaper;
+
+
+  function addRow(papers){
+      let table = document.getElementById("myTableData");
+      var rowCount = table.rows.length;
+      var row = table.insertRow(rowCount);
+      row.insertCell(0).innerHTML = papers;
+      row.insertCell(1).innerHTML = '<input type="button" value="Answer" '+'onclick=(buttonclicked("'+papers+'"))>'
+}
+
+</script>
+</body>
+</html>

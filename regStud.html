@@ -1,0 +1,104 @@
+<html>
+<head>
+  <link rel="icon" href="https://nptel.ac.in/LocalChapter/Assets/college_logo/846_logo.png">
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+<title>Registeration-Student</title>
+<style type='text/css'>
+body{background-image: url('./images/IMG_3339.jpg');background-position: center center;
+    background-size: 100% 100%; }
+ h1.heading{font-family: Arial, Helvetica, serif;font-style: italic;font-size: 40px}
+ div.studinfo{background-color: white;
+ opacity: 0.85;
+	width:600px;
+	height:820px;
+	border-radius: 15px;}
+label.inst{font-size: 10px}
+label.headinglbl{font-family: Arial, Helvetica, serif;font-size: 20px;}
+input.entries{height:25px;border-radius: 5px; background-color: lightgrey}
+input.btn{font-family: Arial, Helvetica, sans-serif;width:120px;height: 40px;font-size: 20px;background-color: lightgrey; color:black; border-radius: 10px}
+</style>
+</head>
+<body>
+	<center>
+		<br/>
+		<div class = "studinfo">
+			<br/>
+			<image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" >
+			<h1 class = "heading"> Student Regsitration Form</h1>
+		<label class="inst">Fields marked by<sup>*</sup> are Mandatory </label><br/>
+		<br/>
+		<label class="headinglbl">First Name<sup>*</sup></label><br/>
+		<input id="fn" class="entries" type = "text" name="fn" size="50"><br/><br/>
+		<label class="headinglbl">Last Name</label><br/>
+		<input id="sn" class="entries" type = "text" name="fn" size="50"><br/><br/>
+		<label class="headinglbl">USN<sup>*</sup></label><br/>
+		<input id="usn"class="entries" type = "text" name="fn" size="50"><br/><br/>
+		<label class="headinglbl">Email address<sup>*</sup></label><br/>
+		<input id="txtEmail" class="entries" type = "email" name="fn" size="50" required><br/><br/>
+		<label class="headinglbl">Enter password<sup>*</sup>(min 6 chars)</label><br/>
+		<input id="txtPassword" class="entries" type = "password" name="fn" size="50" required><br/><br/>
+		<label class="headinglbl">Re-Enter password<sup>*</sup></label><br/>
+		<input class="entries" type = "password" name="fn" size="50"><br/><br/>
+		<label class="headinglbl"> Select semester<sup>*</sup>:</label>
+		<select id="SelSem">
+  			<option value="1">1</option>
+  			<option value="2">2</option>
+  			<option value="3">3</option>
+ 			<option value="4">4</option>
+ 			<option value="5">5</option>
+  			<option value="6">6</option>
+  			<option value="7">7</option>
+ 			<option value="8">8</option>
+			</select><br/><br/>
+      <label class="headinglbl">Select branch:<sup>*</sup></label>
+  		<select id="selDept">
+    			<option value="CS">Computer Science</option>
+    			<option value="IS">Infomration Science</option>
+    			<option value="EC">Electronics&Communications</option>
+   			<option value="CV">Civil Engineering</option>
+   			<option value="IE">Industrial Engineering</option>
+    			<option value="AE">Aeronautics</option>
+  			</select><br/><br/>
+		<input id="btnSignUp" class="btn" type="submit" value="Register">
+		</div>
+    </center>
+    <script>
+     // Initialize Firebase
+      var config = {
+        apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+        authDomain: "iwtproj.firebaseapp.com",
+        databaseURL: "https://iwtproj.firebaseio.com",
+        projectId: "iwtproj",
+        storageBucket: "iwtproj.appspot.com",
+        messagingSenderId: "417785185411"
+      };
+      firebase.initializeApp(config);
+    document.getElementById("btnSignUp").addEventListener('click', e=>{
+      const email = document.getElementById("txtEmail").value;
+      const pass = document.getElementById("txtPassword").value;
+      const firstname = document.getElementById("fn").value;
+      const lastname = document.getElementById("sn").value;
+      const usn = document.getElementById("usn").value;
+      const sem = document.getElementById("SelSem").value;
+      const dept = document.getElementById("selDept").value;
+      firebase.auth().createUserWithEmailAndPassword(email, pass).then(RegisterStudInfo(email,firstname,lastname,dept,usn,sem)).catch(function(error) {
+       console.log(error.message);
+      });
+    })
+
+    function RegisterStudInfo(emailID,firstname,lastname,dept,usn,sem){
+      var database = firebase.database()
+      database.ref('students').push({
+          username: emailID,
+          FirstName: firstname,
+          LastName: lastname,
+          Dept: dept,
+          Usn: usn,
+          Sem: sem
+      })
+		alert('Registered!')
+    }
+</script>
+</body>
+</html>

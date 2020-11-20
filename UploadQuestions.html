@@ -1,0 +1,100 @@
+<html>
+<head>
+  <link rel="icon" href="https://nptel.ac.in/LocalChapter/Assets/college_logo/846_logo.png">
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+  <title>Upload Question Paper</title>
+  <style type='text/css'>
+  body{background-image: url('./images/IMG_0189.jpg');background-position: center center;
+    background-size: 100% 100%; }
+    div{background-color: white;
+    opacity: 0.85;
+   	width:800px;
+   	height:680px;
+   	border-radius: 15px;}
+    input.btn{font-family: Arial, Helvetica, sans-serif;width:120px;height: 40px;font-size: 20px;background-color: lightgrey; color:black; border-radius: 10px}
+    textarea{background-color: lightgrey}
+    h1{font-family: Arial, Helvetica, serif;font-style: italic;font-size: 40px}
+    h2{font-family: Arial, Helvetica, serif;font-style: italic;font-size: 25px}
+    input.entries{height:25px;border-radius: 5px; background-color: lightgrey; width: 100px;}
+    label.MarksRemaining{font-family: Arial, Helvetica, serif;font-style: italic;font-size: 20px}
+  </style>
+</head>
+<body>
+  <center>
+  <div>
+    <br/>
+    <image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png" >
+      <br/><br/>
+  <h1 class="heading">Enter the Question</h1>
+  <h6 id="dets"></h6>
+  <textarea id="QuestTxt" rows='10' cols='100' onfocus="this.value=''">
+  </textarea> </br>
+  <h2 class="heading"> Enter the alloted marks</h2>
+  <input id="MarksTxt" class="entries" type = "text" size="50" onfocus="this.value=''"><br/><br/>
+  <label class="MarksRemaining" id='mm'>Marks remaining: 100 </label> <br/><br/>
+  <input id="AddBtn" class="btn" type="submit" value="Add">
+</div>
+</center>
+<script>
+var config = {
+  apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+  authDomain: "iwtproj.firebaseapp.com",
+  databaseURL: "https://iwtproj.firebaseio.com",
+  projectId: "iwtproj",
+  storageBucket: "iwtproj.appspot.com",
+  messagingSenderId: "417785185411"
+};
+firebase.initializeApp(config);
+
+var papername;
+var sem;
+var branch;
+var marks;
+
+window.onload = function () {
+  var url = document.location.href,
+          params = url.split('?')[1].split('&'),
+          data = {}, tmp;
+  for (var i = 0, l = params.length; i < l; i++) {
+    tmp = params[i].split('=');
+    data[tmp[0]] = tmp[1];
+  }
+  sem = data['Semester'];
+  papername = data['Subject'];
+  branch = data['Branch'];
+  marks = data['marks'];
+  let lbl = document.getElementById('mm');
+  lbl.innerHTML = "Remaining Marks: "+ marks;
+  //console.log(data);
+  //document.getElementById('here').innerHTML = data.name;
+  document.getElementById('dets').innerHTML="Your current details are:<br>Sem:"+sem+" Sub:"+papername+" Dept:"+branch+" Marks:"+marks;
+}
+
+document.getElementById("AddBtn").addEventListener('click', e=>{
+  const question = document.getElementById("QuestTxt").value;
+  const marks = document.getElementById("MarksTxt").value;
+  verify(question, marks);
+})
+
+function verify(currentquestion, currentmarks){
+  if (currentmarks <= marks) {
+    marks = marks - currentmarks
+    let lbl = document.getElementById('mm');
+    lbl.innerHTML = "Remaining Marks: " + marks;
+    uploadToDB(currentquestion, currentmarks);
+  } else {
+    alert("Marks alloted to this question is invalid")
+  }
+}
+
+function uploadToDB(currentQuestion,currentMarks){
+  var database = firebase.database()
+  database.ref('papers').child(branch).child(sem).child(papername).push({
+      Quest: currentQuestion,
+      Marks: currentMarks
+  })
+}
+</script>
+</body>
+</html>

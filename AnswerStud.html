@@ -1,0 +1,102 @@
+<html>
+<head>
+  <script src="https://www.gstatic.com/firebasejs/4.8.0/firebase.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/4.6.2/firebase-auth.js"></script>
+<title>Answer</title>
+<style type='text/css'>
+body{background-image: url('./images/IMG_1900.jpg');background-position: center center;
+  background-size: 100% 100%; }
+  div{
+  	background-color: white;
+  	opacity: 0.85;
+  	width:700px;
+  	height:600px;
+  	border-radius: 15px;
+  }
+  input.btn{font-family: Arial, Helvetica, sans-serif;width:120px;height: 40px;font-size: 20px;background-color: lightgrey; color:black; border-radius: 10px}
+  p.question{font-family: Arial, Helvetica, sans-serif;font-size: 20px;}
+  label{font-family: Arial, Helvetica, sans-serif;font-size: 20px;}
+  textarea{background-color: lightgrey}
+</style>
+</head>
+<body onload="fetchQuestions()">
+  <center><div>
+    <br/>
+    <image class = "dsi" src="https://dayanandasagar.edu/templates/dsi/images/logo.png">
+      <br/>
+    <p id="questionlbl" class="question">Loading....</p>
+    <label id="markslbl"> -- marks</label>
+    <br/><br/>
+    <textarea id="AnswerTxt" rows='10' cols='90' onfocus="this.value=''">
+    </textarea> </br> <br/>
+    <input id="btnSignIn" onclick="saveanswers(indexnumber)" class="btn" type="submit" value="Next">
+  </div>
+</center>
+<script>
+var config = {
+  apiKey: "AIzaSyBYo6YWjnWZ-erOL1ET03m8gGaFxJbR8-A",
+  authDomain: "iwtproj.firebaseapp.com",
+  databaseURL: "https://iwtproj.firebaseio.com",
+  projectId: "iwtproj",
+  storageBucket: "iwtproj.appspot.com",
+  messagingSenderId: "417785185411"
+};
+firebase.initializeApp(config);
+
+var marks = [];
+var questions = [];
+var indexnumber = 0;
+var totalMarks = 0;
+var sem=localStorage.getItem("sem");
+var branch=localStorage.getItem("branch");
+var studName=localStorage.getItem("studentName");
+var paperSel=localStorage.getItem("paperselected");
+
+function fetchQuestions(){
+  var ref = firebase.database().ref("papers").child(studentBranch).child(studentSemester).child(studentpaperSelected); //subsitite the actual values here
+ref.once("value")
+  .then(function(snapshot) {
+    snapshot.forEach(function(childSnapshot) {
+      var key = childSnapshot.val();
+      var currentmarks = childSnapshot.child("Marks").val();
+      var currentquestion = childSnapshot.child("Quest").val();
+      marks.push(currentmarks);
+      questions.push(currentquestion);
+      totalMarks = marks.length;
+      setupScreen(indexnumber);
+ });
+  });
+}
+
+function setupScreen(indexnumber){
+    let questionlabel = document.getElementById('questionlbl');
+    questionlabel.innerHTML = questions[indexnumber];
+    let markslabel = document.getElementById('markslbl');
+    markslabel.innerHTML = marks[indexnumber]+ " Marks";
+}
+
+var studentSemester = localStorage.getItem("sem");
+var studentBranch = localStorage.getItem("branch");
+var studentname = localStorage.getItem("studentName");
+var studentpaperSelected = localStorage.getItem("paperselected");
+
+function saveanswers(){
+  const answertxt = document.getElementById('AnswerTxt').value;
+  var database = firebase.database()
+  database.ref('AnswerScripts').child(studentBranch).child(studentSemester).child(studentname).child(studentpaperSelected).push({ //substitute student name here
+    Quest: questions[indexnumber],
+    AllotedMarks: marks[indexnumber],
+    answer: answertxt
+  })
+  indexnumber += 1;
+  if (indexnumber<totalMarks){
+    setupScreen(indexnumber);
+  } else {
+    window.location.assign('./homeStud.html');
+  }
+
+}
+
+</script>
+</body>
+</html>
